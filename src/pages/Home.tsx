@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
+import useInterval from "../utils/use-interval.hooks";
 
 const query = gql`
   query {
@@ -29,6 +30,25 @@ export const Home: React.FC<HomeProps> = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [walletBalance, setWalletBalance] = useState(0.0);
 
+  let [count, setCount] = useState(60);
+
+  useInterval(() => {
+    setCount(count === 0 ? 59 : count - 1);
+  }, 1000);
+
+  useInterval(() => {
+    fetch(
+      `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xe6f1966d04cfcb9cd1b1dc4e8256d8b501b11cba&address=0x1940Ae4af4270e64EB541ef60edB94a85a0C35b6&tag=latest&apikey=S823T3DBHWPWE1T13K3BQ1WAD1NWV39MNQ`,
+      {
+        method: "GET",
+      }
+    ).then(async (x) => {
+      const wallet = await x.json();
+      setWalletBalance(parseFloat(wallet.result) / 1000000000);
+      setIsLoading(false);
+    });
+  }, 60000);
+
   useEffect(() => {
     fetch(
       `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xe6f1966d04cfcb9cd1b1dc4e8256d8b501b11cba&address=0x1940Ae4af4270e64EB541ef60edB94a85a0C35b6&tag=latest&apikey=S823T3DBHWPWE1T13K3BQ1WAD1NWV39MNQ`,
@@ -42,12 +62,16 @@ export const Home: React.FC<HomeProps> = () => {
     });
   }, []);
 
-  const { loading, data } = useQuery(query);
+  const { loading, data } = useQuery(query, {
+    pollInterval: 60000,
+    fetchPolicy: "network-only",
+  });
 
   if (loading || isLoading) return <p>Loading...</p>;
 
   return (
     <div>
+      <pre>Updating in: {count}s</pre>
       <fieldset>
         <legend>Wallet Data:</legend>
         <p>
