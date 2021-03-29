@@ -118,7 +118,7 @@ export const Home: React.FC<HomeProps> = () => {
   };
 
   return (
-    <Container maxW="container.xl" pl="0" pr="0" margin="0">
+    <Box>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
@@ -233,6 +233,6 @@ export const Home: React.FC<HomeProps> = () => {
           </Box>
         </Container>
       </Container>
-    </Container>
+    </Box>
   );
 };
