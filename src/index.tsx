@@ -5,10 +5,11 @@ import {
   from,
   InMemoryCache,
 } from "@apollo/client";
-import React from "react";
 import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 import { App } from "./App";
+import { ChakraProvider, extendTheme, ThemeConfig } from "@chakra-ui/react";
+import React from "react";
 
 const httpLink = createHttpLink({
   uri: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
@@ -19,12 +20,29 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+const colors = {
+  brand: {
+    900: "#1a365d",
+    800: "#153e75",
+    700: "#2a69ac",
+  },
+};
+
+const config: ThemeConfig = {
+  initialColorMode: "dark",
+  useSystemColorMode: false,
+};
+
+const theme = extendTheme({ colors, config });
+
 ReactDOM.render(
-  // <React.StrictMode>
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
-  // </React.StrictMode>,
+  <React.StrictMode>
+    <ApolloProvider client={client}>
+      <ChakraProvider theme={theme}>
+        <App />
+      </ChakraProvider>
+    </ApolloProvider>
+  </React.StrictMode>,
   document.getElementById("root")
 );
 

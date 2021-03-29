@@ -1,7 +1,12 @@
 import React from "react";
+import Navbar from "./components/NavBar";
 
 interface HeaderProps {}
 
 export const Header: React.FC<HeaderProps> = () => {
-  return <h1>SafeEarth Tracker</h1>;
+  return (
+    <header>
+      <Navbar />
+    </header>
+  );
 };

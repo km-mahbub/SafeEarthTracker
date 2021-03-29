@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
-import useInterval from "../utils/use-interval.hooks";
+import useInterval from "../utils/useInterval.hook";
+import { Box, Container } from "@chakra-ui/react";
 
 const query = gql`
   query {
@@ -29,12 +30,6 @@ interface HomeProps {}
 export const Home: React.FC<HomeProps> = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [walletBalance, setWalletBalance] = useState(0.0);
-
-  let [count, setCount] = useState(60);
-
-  useInterval(() => {
-    setCount(count === 0 ? 59 : count - 1);
-  }, 1000);
 
   useInterval(() => {
     fetch(
@@ -70,43 +65,74 @@ export const Home: React.FC<HomeProps> = () => {
   if (loading || isLoading) return <p>Loading...</p>;
 
   return (
-    <div>
-      <pre>Updating in: {count}s</pre>
-      <fieldset>
-        <legend>Wallet Data:</legend>
-        <p>
-          <strong>Total SafeEarth Balance: </strong> {walletBalance.toFixed(4)}
-        </p>
-        <p>
-          <strong>Total Value: </strong>{" "}
-          {(
-            data.token.derivedETH *
-            walletBalance *
-            data.pair.token1Price
-          ).toFixed(4) + " USDT"}
-        </p>
-        <p>
-          <strong>Total Value in ETH: </strong>{" "}
-          {(data.token.derivedETH * walletBalance).toFixed(4) + " ETH"}
-        </p>
-      </fieldset>
-
-      <fieldset>
-        <legend>Market Data:</legend>
-        <p>
-          <strong>ETH/USDT: </strong>{" "}
-          {parseFloat(data.pair.token1Price).toFixed(4)}
-        </p>
-        <p>
-          <strong>Current SafeEarth Price: </strong>{" "}
-          {(data.token.derivedETH * data.pair.token1Price).toFixed(12) +
-            " USDT"}
-        </p>
-        <p>
-          <strong>Volume 24H: </strong>{" "}
-          {parseFloat(data.tokenDayDatas[0].dailyVolumeUSD).toFixed(4)}
-        </p>
-      </fieldset>
-    </div>
+    <Container maxW="container.lg" padding="10px">
+      <Container
+        border="1px solid gray"
+        borderRadius="1px"
+        padding="0"
+        marginTop="15px"
+        maxW="container.md"
+      >
+        <Box
+          borderRadius="1px"
+          bg="crimson"
+          w="100%"
+          padding="0.4rem"
+          color="white"
+        >
+          <strong>Wallet Data</strong>
+        </Box>
+        <Box padding="10px">
+          <p>
+            <strong>Total SafeEarth Balance: </strong>{" "}
+            {walletBalance.toFixed(4)}
+          </p>
+          <p>
+            <strong>Total Value: </strong>{" "}
+            {(
+              data.token.derivedETH *
+              walletBalance *
+              data.pair.token1Price
+            ).toFixed(4) + " USDT"}
+          </p>
+          <p>
+            <strong>Total Value in ETH: </strong>{" "}
+            {(data.token.derivedETH * walletBalance).toFixed(4) + " ETH"}
+          </p>
+        </Box>
+      </Container>
+      <Container
+        border="1px solid gray"
+        borderRadius="1px"
+        padding="0"
+        marginTop="10px"
+        maxW="container.md"
+      >
+        <Box
+          borderRadius="1px"
+          bg="crimson"
+          w="100%"
+          padding="0.4rem"
+          color="white"
+        >
+          <strong>Market Data</strong>
+        </Box>
+        <Box padding="10px">
+          <p>
+            <strong>ETH/USDT: </strong>{" "}
+            {parseFloat(data.pair.token1Price).toFixed(4)}
+          </p>
+          <p>
+            <strong>Current SafeEarth Price: </strong>{" "}
+            {(data.token.derivedETH * data.pair.token1Price).toFixed(12) +
+              " USDT"}
+          </p>
+          <p>
+            <strong>Volume 24H: </strong>{" "}
+            {parseFloat(data.tokenDayDatas[0].dailyVolumeUSD).toFixed(4)}
+          </p>
+        </Box>
+      </Container>
+    </Container>
   );
 };
