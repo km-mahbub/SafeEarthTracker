@@ -1,7 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import useInterval from "../utils/useInterval.hook";
-import { Box, Container } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Container,
+  FormControl,
+  FormLabel,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Stack,
+  Stat,
+  StatLabel,
+  StatNumber,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { Loader } from "../components/loader/Loader";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 
 const query = gql`
   query {
@@ -28,110 +50,188 @@ const query = gql`
 interface HomeProps {}
 
 export const Home: React.FC<HomeProps> = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const [walletBalance, setWalletBalance] = useState(0.0);
+  const [walletAddr, setWalletAddr] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [formWallet, setFormWallet] = useState("");
 
   useInterval(() => {
-    fetch(
-      `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xe6f1966d04cfcb9cd1b1dc4e8256d8b501b11cba&address=0x1940Ae4af4270e64EB541ef60edB94a85a0C35b6&tag=latest&apikey=S823T3DBHWPWE1T13K3BQ1WAD1NWV39MNQ`,
-      {
-        method: "GET",
-      }
-    ).then(async (x) => {
-      const wallet = await x.json();
-      setWalletBalance(parseFloat(wallet.result) / 1000000000);
-      setIsLoading(false);
-    });
-  }, 60000);
+    const wallet = localStorage.getItem("wallet");
+    if (wallet) {
+      fetch(
+        `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xe6f1966d04cfcb9cd1b1dc4e8256d8b501b11cba&address=${wallet}&tag=latest&apikey=S823T3DBHWPWE1T13K3BQ1WAD1NWV39MNQ`,
+        {
+          method: "GET",
+        }
+      ).then(async (x) => {
+        const wallet = await x.json();
+        setWalletBalance(parseFloat(wallet.result) / 1000000000);
+      });
+    }
+  }, 30000);
 
   useEffect(() => {
-    fetch(
-      `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xe6f1966d04cfcb9cd1b1dc4e8256d8b501b11cba&address=0x1940Ae4af4270e64EB541ef60edB94a85a0C35b6&tag=latest&apikey=S823T3DBHWPWE1T13K3BQ1WAD1NWV39MNQ`,
-      {
-        method: "GET",
-      }
-    ).then(async (x) => {
-      const wallet = await x.json();
-      setWalletBalance(parseFloat(wallet.result) / 1000000000);
-      setIsLoading(false);
-    });
-  }, []);
+    const wallet = localStorage.getItem("wallet");
+    if (!wallet) {
+      localStorage.setItem("wallet", "");
+    } else {
+      setWalletAddr(wallet);
+      fetch(
+        `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xe6f1966d04cfcb9cd1b1dc4e8256d8b501b11cba&address=${wallet}&tag=latest&apikey=S823T3DBHWPWE1T13K3BQ1WAD1NWV39MNQ`,
+        {
+          method: "GET",
+        }
+      ).then(async (x) => {
+        const wallet = await x.json();
+        setWalletBalance(parseFloat(wallet.result) / 1000000000);
+      });
+    }
+  }, [walletAddr]);
 
   const { loading, data } = useQuery(query, {
-    pollInterval: 60000,
+    pollInterval: 30000,
     fetchPolicy: "network-only",
   });
 
-  if (loading || isLoading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <Center>
+        <Loader loading={loading} />
+      </Center>
+    );
+  }
+
+  const handleClick = () => {
+    if (walletAddr) {
+      localStorage.setItem("wallet", "");
+      setWalletAddr("");
+      setFormWallet("");
+    } else {
+      onOpen();
+    }
+  };
+
+  const handleAddWallet = () => {
+    localStorage.setItem("wallet", formWallet);
+    setWalletAddr(formWallet);
+    onClose();
+  };
 
   return (
-    <Container maxW="container.lg" padding="10px">
-      <Container
-        border="1px solid gray"
-        borderRadius="1px"
-        padding="0"
-        marginTop="15px"
-        maxW="container.md"
-      >
-        <Box
+    <Container maxW="container.xl" pl="0" pr="0" margin="0">
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add SafeEarth Wallet Address</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl>
+              <FormLabel>Wallet Address</FormLabel>
+              <Input
+                value={formWallet}
+                onChange={(e) => setFormWallet(e.target.value)}
+                placeholder="Wallet Address"
+              />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button bg="crimson" mr={3} onClick={handleAddWallet}>
+              Add
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Box borderRadius="1px" bg="gray" w="100%" padding="0.4rem" color="white">
+        <Stack spacing={4} direction="row" align="center">
+          <Button size="xs" colorScheme="blue" onClick={handleClick}>
+            {walletAddr ? <DeleteIcon w={4} h={4} /> : <AddIcon w={4} h={4} />}
+          </Button>
+          <pre>{walletAddr ? "Wallet Connected" : "No Wallet"}</pre>
+        </Stack>
+      </Box>
+      <Container maxW="container.lg" padding="10px">
+        <Container
+          border="1px solid gray"
           borderRadius="1px"
-          bg="crimson"
-          w="100%"
-          padding="0.4rem"
-          color="white"
+          padding="0"
+          marginTop="15px"
+          maxW="container.md"
         >
-          <strong>Wallet Data</strong>
-        </Box>
-        <Box padding="10px">
-          <p>
-            <strong>Total SafeEarth Balance: </strong>{" "}
-            {walletBalance.toFixed(4)}
-          </p>
-          <p>
-            <strong>Total Value: </strong>{" "}
-            {(
-              data.token.derivedETH *
-              walletBalance *
-              data.pair.token1Price
-            ).toFixed(4) + " USDT"}
-          </p>
-          <p>
-            <strong>Total Value in ETH: </strong>{" "}
-            {(data.token.derivedETH * walletBalance).toFixed(4) + " ETH"}
-          </p>
-        </Box>
-      </Container>
-      <Container
-        border="1px solid gray"
-        borderRadius="1px"
-        padding="0"
-        marginTop="10px"
-        maxW="container.md"
-      >
-        <Box
+          <Box
+            borderRadius="1px"
+            bg="crimson"
+            w="100%"
+            padding="0.4rem"
+            color="white"
+          >
+            <strong>Wallet Data</strong>
+          </Box>
+          <Box padding="10px">
+            <Stat>
+              <StatLabel color="green.100">Total SafeEarth Balance</StatLabel>
+              <StatNumber>{walletBalance.toFixed(4)}</StatNumber>
+            </Stat>
+
+            <Stat>
+              <StatLabel color="green.100">Total Value</StatLabel>
+              <StatNumber>
+                {(
+                  data.token.derivedETH *
+                  walletBalance *
+                  data.pair.token1Price
+                ).toFixed(4) + " USDT"}
+              </StatNumber>
+            </Stat>
+
+            <Stat>
+              <StatLabel color="green.100">Total Value in ETH</StatLabel>
+              <StatNumber>
+                {(data.token.derivedETH * walletBalance).toFixed(10) + " ETH"}
+              </StatNumber>
+            </Stat>
+          </Box>
+        </Container>
+        <Container
+          border="1px solid gray"
           borderRadius="1px"
-          bg="crimson"
-          w="100%"
-          padding="0.4rem"
-          color="white"
+          padding="0"
+          marginTop="10px"
+          maxW="container.md"
         >
-          <strong>Market Data</strong>
-        </Box>
-        <Box padding="10px">
-          <p>
-            <strong>ETH/USDT: </strong>{" "}
-            {parseFloat(data.pair.token1Price).toFixed(4)}
-          </p>
-          <p>
-            <strong>Current SafeEarth Price: </strong>{" "}
-            {(data.token.derivedETH * data.pair.token1Price).toFixed(12) +
-              " USDT"}
-          </p>
-          <p>
-            <strong>Volume 24H: </strong>{" "}
-            {parseFloat(data.tokenDayDatas[0].dailyVolumeUSD).toFixed(4)}
-          </p>
-        </Box>
+          <Box
+            borderRadius="1px"
+            bg="crimson"
+            w="100%"
+            padding="0.4rem"
+            color="white"
+          >
+            <strong>Market Data</strong>
+          </Box>
+          <Box padding="10px">
+            <Stat>
+              <StatLabel color="green.100">ETH/USDT</StatLabel>
+              <StatNumber>
+                {parseFloat(data.pair.token1Price).toFixed(4)}
+              </StatNumber>
+            </Stat>
+            <Stat>
+              <StatLabel color="green.100">
+                Current SafeEarth Token Price
+              </StatLabel>
+              <StatNumber>
+                {(data.token.derivedETH * data.pair.token1Price).toFixed(12) +
+                  " USDT"}
+              </StatNumber>
+            </Stat>
+            <Stat>
+              <StatLabel color="green.100">Volume 24H</StatLabel>
+              <StatNumber>
+                {parseFloat(data.tokenDayDatas[0].dailyVolumeUSD).toFixed(4)}
+              </StatNumber>
+            </Stat>
+          </Box>
+        </Container>
       </Container>
     </Container>
   );
