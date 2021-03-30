@@ -16,11 +16,14 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  SimpleGrid,
   Stack,
   Stat,
   StatLabel,
   StatNumber,
+  useClipboard,
   useDisclosure,
+  Text,
 } from "@chakra-ui/react";
 import { Loader } from "../components/loader/Loader";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
@@ -55,6 +58,8 @@ export const Home: React.FC<HomeProps> = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [formWallet, setFormWallet] = useState("");
   //const [formError, setFormError] = useState(false);
+  const [value] = React.useState("0x60258d5a5f8e38bd8B4fcc6f1718445eA83F2eA4");
+  const { hasCopied, onCopy } = useClipboard(value);
 
   const formatter12 = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -291,7 +296,7 @@ export const Home: React.FC<HomeProps> = () => {
             </Center>
           </Box>
         </Container>
-        {/* <Container
+        <Container
           border="1px solid gray"
           borderRadius="1px"
           padding="0"
@@ -305,11 +310,39 @@ export const Home: React.FC<HomeProps> = () => {
             padding="0.4rem"
             color="white"
           >
-            <Center>
-              <strong>Copyright © Butterman</strong>
-            </Center>
+            <SimpleGrid columns={1}>
+              <Center color="crimson">
+                <Text fontSize={{ base: "7px", md: "9px", lg: "12px" }}>
+                  <strong>
+                    <pre>Copyright © Butterman</pre>
+                  </strong>
+                </Text>
+              </Center>
+              <Center color="crimson">
+                <Text fontSize={{ base: "6px", md: "9px", lg: "12px" }}>
+                  <pre>
+                    If you are feeling generous, feel free to donate me some
+                    $SafeEarth!
+                  </pre>
+                </Text>
+              </Center>
+              <Center>
+                <Text fontSize={{ base: "6px", md: "9px", lg: "12px" }}>
+                  <pre>{value}</pre>
+                </Text>
+                <Button
+                  colorScheme="teal"
+                  variant="ghost"
+                  onClick={onCopy}
+                  ml={2}
+                  size="xs"
+                >
+                  {hasCopied ? "Copied" : "Copy"}
+                </Button>
+              </Center>
+            </SimpleGrid>
           </Box>
-        </Container> */}
+        </Container>
       </Container>
     </Box>
   );
