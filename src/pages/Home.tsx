@@ -54,6 +54,31 @@ export const Home: React.FC<HomeProps> = () => {
   const [walletAddr, setWalletAddr] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [formWallet, setFormWallet] = useState("");
+  //const [formError, setFormError] = useState(false);
+
+  const formatter12 = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+
+    //minimumFractionDigits: 0,
+    maximumFractionDigits: 12,
+  });
+
+  const formatter4 = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+
+    //minimumFractionDigits: 0,
+    maximumFractionDigits: 4,
+  });
+
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "ETH",
+
+    //minimumFractionDigits: 0,
+    maximumFractionDigits: 10,
+  });
 
   useInterval(() => {
     const wallet = localStorage.getItem("wallet");
@@ -64,8 +89,12 @@ export const Home: React.FC<HomeProps> = () => {
           method: "GET",
         }
       ).then(async (x) => {
-        const wallet = await x.json();
-        setWalletBalance(parseFloat(wallet.result) / 1000000000);
+        const apiWallet = await x.json();
+        if (!parseFloat(apiWallet.result)) {
+          setWalletBalance(0);
+        } else {
+          setWalletBalance(parseFloat(apiWallet.result) / 1000000000);
+        }
       });
     }
   }, 30000);
@@ -82,8 +111,12 @@ export const Home: React.FC<HomeProps> = () => {
           method: "GET",
         }
       ).then(async (x) => {
-        const wallet = await x.json();
-        setWalletBalance(parseFloat(wallet.result) / 1000000000);
+        const apiWallet = await x.json();
+        if (!parseFloat(apiWallet.result)) {
+          setWalletBalance(0);
+        } else {
+          setWalletBalance(parseFloat(apiWallet.result) / 1000000000);
+        }
       });
     }
   }, [walletAddr]);
@@ -105,6 +138,7 @@ export const Home: React.FC<HomeProps> = () => {
     if (walletAddr) {
       localStorage.setItem("wallet", "");
       setWalletAddr("");
+      setWalletBalance(0);
       setFormWallet("");
     } else {
       onOpen();
@@ -170,24 +204,26 @@ export const Home: React.FC<HomeProps> = () => {
           <Box padding="10px">
             <Stat>
               <StatLabel color="green.100">Total SafeEarth Balance</StatLabel>
-              <StatNumber>{walletBalance.toFixed(4)}</StatNumber>
+              <StatNumber>
+                {walletBalance === 0
+                  ? "No Balance"
+                  : walletBalance.toLocaleString("en-US")}
+              </StatNumber>
             </Stat>
 
             <Stat>
               <StatLabel color="green.100">Total Value</StatLabel>
               <StatNumber>
-                {(
-                  data.token.derivedETH *
-                  walletBalance *
-                  data.pair.token1Price
-                ).toFixed(4) + " USDT"}
+                {formatter4.format(
+                  data.token.derivedETH * walletBalance * data.pair.token1Price
+                )}
               </StatNumber>
             </Stat>
 
             <Stat>
               <StatLabel color="green.100">Total Value in ETH</StatLabel>
               <StatNumber>
-                {(data.token.derivedETH * walletBalance).toFixed(10) + " ETH"}
+                {formatter.format(data.token.derivedETH * walletBalance)}
               </StatNumber>
             </Stat>
           </Box>
@@ -212,7 +248,7 @@ export const Home: React.FC<HomeProps> = () => {
             <Stat>
               <StatLabel color="green.100">ETH/USDT</StatLabel>
               <StatNumber>
-                {parseFloat(data.pair.token1Price).toFixed(4)}
+                {formatter4.format(data.pair.token1Price)}
               </StatNumber>
             </Stat>
             <Stat>
@@ -220,14 +256,15 @@ export const Home: React.FC<HomeProps> = () => {
                 Current SafeEarth Token Price
               </StatLabel>
               <StatNumber>
-                {(data.token.derivedETH * data.pair.token1Price).toFixed(12) +
-                  " USDT"}
+                {formatter12.format(
+                  data.token.derivedETH * data.pair.token1Price
+                )}
               </StatNumber>
             </Stat>
             <Stat>
               <StatLabel color="green.100">Volume 24H</StatLabel>
               <StatNumber>
-                {parseFloat(data.tokenDayDatas[0].dailyVolumeUSD).toFixed(4)}
+                {formatter4.format(data.tokenDayDatas[0].dailyVolumeUSD)}
               </StatNumber>
             </Stat>
           </Box>
