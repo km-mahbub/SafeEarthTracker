@@ -269,6 +269,47 @@ export const Home: React.FC<HomeProps> = () => {
             </Stat>
           </Box>
         </Container>
+        <Container
+          border="1px solid gray"
+          borderRadius="1px"
+          padding="0"
+          marginTop="10px"
+          maxW="container.md"
+        >
+          <Box
+            borderRadius="1px"
+            bg="crimson"
+            w="100%"
+            padding="0.4rem"
+            color="white"
+          >
+            <strong>Chart</strong>
+          </Box>
+          <Box padding="10px">
+            <Center>
+              <pre>Coming soon...</pre>
+            </Center>
+          </Box>
+        </Container>
+        {/* <Container
+          border="1px solid gray"
+          borderRadius="1px"
+          padding="0"
+          marginTop="10px"
+          maxW="container.md"
+        >
+          <Box
+            borderRadius="1px"
+            bg="black"
+            w="100%"
+            padding="0.4rem"
+            color="white"
+          >
+            <Center>
+              <strong>Copyright © Butterman</strong>
+            </Center>
+          </Box>
+        </Container> */}
       </Container>
     </Box>
   );
