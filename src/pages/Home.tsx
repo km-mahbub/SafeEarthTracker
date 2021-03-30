@@ -343,7 +343,7 @@ export const Home: React.FC<HomeProps> = () => {
                     </Text>
                   ) : (
                     <Text fontSize={{ base: "6px", md: "9px", lg: "12px" }}>
-                      Copied
+                      Copy
                     </Text>
                   )}
                 </Button>
