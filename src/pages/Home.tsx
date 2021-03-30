@@ -262,7 +262,7 @@ export const Home: React.FC<HomeProps> = () => {
               </StatNumber>
             </Stat>
             <Stat>
-              <StatLabel color="green.100">Volume 24H</StatLabel>
+              <StatLabel color="green.100">Today's Volume</StatLabel>
               <StatNumber>
                 {formatter4.format(data.tokenDayDatas[0].dailyVolumeUSD)}
               </StatNumber>
