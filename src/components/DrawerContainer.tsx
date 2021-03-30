@@ -69,6 +69,14 @@ export const DrawerContainer: React.FC<DrawerContainerProps> = ({
                   Website <ExternalLinkIcon mx="2px" />
                 </Link>
               </ListItem>
+              <ListItem>
+                <Link
+                  href="https://www.dextools.io/app/uniswap/pair-explorer/0xba6bd00cf4d8a6b182ebd762660151fd34c675aa"
+                  isExternal
+                >
+                  Chart <ExternalLinkIcon mx="2px" />
+                </Link>
+              </ListItem>
             </List>
           </DrawerBody>
         </DrawerContent>
