@@ -337,7 +337,15 @@ export const Home: React.FC<HomeProps> = () => {
                   ml={2}
                   size="xs"
                 >
-                  {hasCopied ? "Copied" : "Copy"}
+                  {hasCopied ? (
+                    <Text fontSize={{ base: "6px", md: "9px", lg: "12px" }}>
+                      Copied
+                    </Text>
+                  ) : (
+                    <Text fontSize={{ base: "6px", md: "9px", lg: "12px" }}>
+                      Copied
+                    </Text>
+                  )}
                 </Button>
               </Center>
             </SimpleGrid>
