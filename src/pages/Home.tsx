@@ -21,7 +21,6 @@ import {
   Stat,
   StatLabel,
   StatNumber,
-  useClipboard,
   useDisclosure,
   Text,
   Link,
@@ -317,7 +316,13 @@ export const Home: React.FC<HomeProps> = () => {
                   <strong>
                     <pre>
                       Copyright © 2021 - Made by{" "}
-                      <Link href="https://t.me/iamdipto7">Butterman</Link>
+                      <Link
+                        color="yellow"
+                        href="https://t.me/iamdipto7"
+                        target="_blank"
+                      >
+                        @Butterman
+                      </Link>
                     </pre>
                   </strong>
                 </Text>
