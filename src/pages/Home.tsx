@@ -59,8 +59,8 @@ export const Home: React.FC<HomeProps> = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [formWallet, setFormWallet] = useState("");
   //const [formError, setFormError] = useState(false);
-  const [value] = React.useState("0x8DdD9bEA0C2e8b7bFd9F267e566B09d9E0F2857f");
-  const { hasCopied, onCopy } = useClipboard(value);
+  //const [value] = React.useState("0x8DdD9bEA0C2e8b7bFd9F267e566B09d9E0F2857f");
+  //const { hasCopied, onCopy } = useClipboard(value);
 
   const formatter12 = new Intl.NumberFormat("en-US", {
     style: "currency",
