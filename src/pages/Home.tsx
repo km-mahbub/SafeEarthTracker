@@ -24,6 +24,7 @@ import {
   useClipboard,
   useDisclosure,
   Text,
+  Link,
 } from "@chakra-ui/react";
 import { Loader } from "../components/loader/Loader";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
@@ -314,11 +315,14 @@ export const Home: React.FC<HomeProps> = () => {
               <Center color="crimson">
                 <Text fontSize={{ base: "7px", md: "9px", lg: "12px" }}>
                   <strong>
-                    <pre>Copyright © Butterman</pre>
+                    <pre>
+                      Copyright © 2021 - Made by{" "}
+                      <Link href="https://t.me/iamdipto7">Butterman</Link>
+                    </pre>
                   </strong>
                 </Text>
               </Center>
-              <Center color="crimson">
+              {/* <Center color="crimson">
                 <Text fontSize={{ base: "6px", md: "9px", lg: "12px" }}>
                   <pre>
                     If you are feeling generous, feel free to donate me some
@@ -347,7 +351,7 @@ export const Home: React.FC<HomeProps> = () => {
                     </Text>
                   )}
                 </Button>
-              </Center>
+              </Center> */}
             </SimpleGrid>
           </Box>
         </Container>
