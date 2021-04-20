@@ -60,6 +60,7 @@ export const Home: React.FC<HomeProps> = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [formWallet, setFormWallet] = useState("");
   const [burnedToken, setBurnedToken] = useState(0.0);
+  const [isBurned, setIsBurned] = useState(true);
   //const [formError, setFormError] = useState(false);
   //const [value] = React.useState("0x8DdD9bEA0C2e8b7bFd9F267e566B09d9E0F2857f");
   //const { hasCopied, onCopy } = useClipboard(value);
@@ -169,6 +170,33 @@ export const Home: React.FC<HomeProps> = () => {
     );
   }
 
+  let burnBody = (
+    <Stat>
+      <StatLabel color="green.100">Tokens Burnt</StatLabel>
+      <StatNumber onClick={() => setIsBurned(false)}>
+        {burnedToken.toLocaleString("en-US")}{" "}
+        <i
+          className="fas fa-burn"
+          style={{ color: "orange", cursor: "pointer" }}
+        ></i>
+      </StatNumber>
+    </Stat>
+  );
+  if (!isBurned) {
+    burnBody = (
+      <Stat>
+        <StatLabel color="green.100">Tokens Circulating</StatLabel>
+        <StatNumber onClick={() => setIsBurned(true)}>
+          {(TOTAL_SUPPLY - burnedToken).toLocaleString("en-US")}{" "}
+          <i
+            className="fas fa-recycle"
+            style={{ color: "green", cursor: "pointer" }}
+          ></i>
+        </StatNumber>
+      </Stat>
+    );
+  }
+
   const handleClick = () => {
     if (walletAddr) {
       localStorage.setItem("wallet", "");
@@ -261,6 +289,8 @@ export const Home: React.FC<HomeProps> = () => {
                 {formatter.format(data.token.derivedETH * walletBalance)}
               </StatNumber>
             </Stat>
+
+            {burnBody}
           </Box>
         </Container>
         <Container
