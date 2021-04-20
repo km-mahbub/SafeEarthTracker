@@ -50,6 +50,8 @@ const query = gql`
   }
 `;
 
+const TOTAL_SUPPLY = 1000000000000000;
+
 interface HomeProps {}
 
 export const Home: React.FC<HomeProps> = () => {
@@ -57,6 +59,7 @@ export const Home: React.FC<HomeProps> = () => {
   const [walletAddr, setWalletAddr] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [formWallet, setFormWallet] = useState("");
+  const [burnedToken, setBurnedToken] = useState(0.0);
   //const [formError, setFormError] = useState(false);
   //const [value] = React.useState("0x8DdD9bEA0C2e8b7bFd9F267e566B09d9E0F2857f");
   //const { hasCopied, onCopy } = useClipboard(value);
@@ -86,6 +89,19 @@ export const Home: React.FC<HomeProps> = () => {
   });
 
   useInterval(() => {
+    fetch(
+      `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xe6f1966d04cfcb9cd1b1dc4e8256d8b501b11cba&address=0x000000000000000000000000000000000000dead&tag=latest&apikey=S823T3DBHWPWE1T13K3BQ1WAD1NWV39MNQ`,
+      {
+        method: "GET",
+      }
+    ).then(async (x) => {
+      const burnWallet = await x.json();
+      if (!parseFloat(burnWallet.result)) {
+        setBurnedToken(0.0);
+      } else {
+        setBurnedToken(parseFloat(burnWallet.result) / 1000000000);
+      }
+    });
     const wallet = localStorage.getItem("wallet");
     if (wallet) {
       fetch(
@@ -105,6 +121,20 @@ export const Home: React.FC<HomeProps> = () => {
   }, 30000);
 
   useEffect(() => {
+    fetch(
+      `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xe6f1966d04cfcb9cd1b1dc4e8256d8b501b11cba&address=0x000000000000000000000000000000000000dead&tag=latest&apikey=S823T3DBHWPWE1T13K3BQ1WAD1NWV39MNQ`,
+      {
+        method: "GET",
+      }
+    ).then(async (x) => {
+      const burnWallet = await x.json();
+      if (!parseFloat(burnWallet.result)) {
+        setBurnedToken(0.0);
+      } else {
+        setBurnedToken(parseFloat(burnWallet.result) / 1000000000);
+      }
+    });
+
     const wallet = localStorage.getItem("wallet");
     if (!wallet) {
       localStorage.setItem("wallet", "");
@@ -267,11 +297,20 @@ export const Home: React.FC<HomeProps> = () => {
               </StatNumber>
             </Stat>
             <Stat>
+              <StatLabel color="green.100">Market Cap</StatLabel>
+              <StatNumber>
+                {formatter4.format(
+                  (TOTAL_SUPPLY - burnedToken) *
+                    (data.token.derivedETH * data.pair.token1Price)
+                )}
+              </StatNumber>
+            </Stat>
+            {/* <Stat>
               <StatLabel color="green.100">Today's Volume</StatLabel>
               <StatNumber>
                 {formatter4.format(data.tokenDayDatas[0].dailyVolumeUSD)}
               </StatNumber>
-            </Stat>
+            </Stat> */}
           </Box>
         </Container>
         <Container
